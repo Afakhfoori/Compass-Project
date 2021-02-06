@@ -15,33 +15,9 @@ namespace Compass.Repository.Core
     public class CompassContext : DbContext
     {
         private static CompassContext instance = null;
-        //public sealed class Singleton
-        //{
-        //    private static Singleton instance = null;
-
-        //    private Singleton()
-        //    {
-        //    }
-
-        //    public static Singleton Instance
-        //    {
-        //        get
-        //        {
-        //            if (instance == null)
-        //            {
-        //                instance = new Singleton();
-        //            }
-        //            return instance;
-        //        }
-        //    }
-        //}
-
+ 
         public CompassContext() : base(GetOptions("DefaultConnection"))
         { }
-
-        //public CompassContext(DbContextOptions<CompassContext> options)
-        //: base(options)
-        //{ }
 
         private static DbContextOptions GetOptions(string connectionString)
         {
@@ -77,70 +53,57 @@ namespace Compass.Repository.Core
             .Build();
 
             options.UseSqlServer(configuration.GetConnectionString("DefaultConnection"));
+        }
 
-            //     => options.UseSqlServer("Data Source=DESKTOP-05US5NA;Initial Catalog=test-1;Integrated Security=True");
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+            new SurverEntityTypeConfiguration().Configure(modelBuilder.Entity<Survey>());
+            new QuestionEntityTypeConfiguration().Configure(modelBuilder.Entity<Question>());
+            new OptionEntityTypeConfiguration().Configure(modelBuilder.Entity<Option>());
 
         }
 
-        //public DbSet<Survey> Surveys { get; set; }
-        //public DbSet<Question> Quesions { get; set; }
-        //public DbSet<Option> Options { get; set; }
+        public class SurverEntityTypeConfiguration : IEntityTypeConfiguration<Survey>
+        {
+            public void Configure(EntityTypeBuilder<Survey> builder)
+            {
+                builder.ToTable("Survey");
+                builder.HasKey(x => x.Id);
 
-        //protected override void OnModelCreating(ModelBuilder modelBuilder)
-        //{
+                builder.Property(x => x.Id).IsRequired().HasDefaultValueSql("NEWID()"); ;
+                builder.Property(x => x.Name).IsRequired().IsUnicode(true).HasMaxLength(100);
+            }
+        }
+        public class QuestionEntityTypeConfiguration : IEntityTypeConfiguration<Question>
+        {
+            public void Configure(EntityTypeBuilder<Question> builder)
+            {
+                builder.ToTable("Question");
+                builder.HasKey(x => x.Id);
 
-        //    new SurverEntityTypeConfiguration().Configure(modelBuilder.Entity<Survey>());
-        //    new QuestionEntityTypeConfiguration().Configure(modelBuilder.Entity<Question>());
-        //    //modelBuilder.Configurations.Add(new SurveyConfiguration());
-        //    //modelBuilder.Configurations.Add(new QuestionConfiguration());
-        //    base.OnModelCreating(modelBuilder);
-        //}
+                builder.Property(x => x.Id).IsRequired().HasDefaultValueSql("NEWID()"); ;
+                builder.Property(x => x.createdBy).IsRequired().IsUnicode(true).HasMaxLength(100);
+                builder.Property(x => x.Title).IsRequired().IsUnicode(true).HasMaxLength(100);
+                builder.HasOne(x => x.Survey).WithMany(x => x.Questions);
 
-        //public static ModelBuilder CreateModel(ModelBuilder modelBuilder, string schema)
-        //{
-        //    new SurverEntityTypeConfiguration().Configure(modelBuilder.Entity<Survey>());
-        //    new QuestionEntityTypeConfiguration().Configure(modelBuilder.Entity<Question>());
-        //    return modelBuilder;
-        //}
-        //public class SurverEntityTypeConfiguration : IEntityTypeConfiguration<Survey>
-        //{
-        //    public void Configure(EntityTypeBuilder<Survey> builder)
-        //    {
-        //        builder.ToTable("Survey");
-        //        builder.HasKey(x => x.Id);
+            }
+        }
 
-        //        builder.Property(x => x.Id).IsRequired();
-        //        builder.Property(x => x.Name).IsRequired().IsUnicode(true).HasMaxLength(100);
-        //    }
-        //}
-        //public class QuestionEntityTypeConfiguration : IEntityTypeConfiguration<Question>
-        //{
-        //    public void Configure(EntityTypeBuilder<Question> builder)
-        //    {
-        //        builder.ToTable("Question");
-        //        builder.HasKey(x => x.Id);
+        public class OptionEntityTypeConfiguration : IEntityTypeConfiguration<Option>
+        {
+            public void Configure(EntityTypeBuilder<Option> builder)
+            {
+                builder.ToTable("Option");
+                builder.HasKey(x => x.Id);
 
-        //        builder.Property(x => x.Id).IsRequired();
-        //        builder.Property(x => x.createdBy).IsRequired().IsUnicode(true).HasMaxLength(100);
-        //        builder.Property(x => x.Title).IsRequired().IsUnicode(true).HasMaxLength(100);
-        //        builder.HasOne(x => x.Survey).WithMany(x => x.Questions);
+                builder.Property(x => x.Id).IsRequired().HasDefaultValueSql("NEWID()"); ;
+                builder.Property(x => x.Text).IsRequired().IsUnicode(true).HasMaxLength(100);
+                builder.HasOne(x => x.Question).WithMany(x => x.Options);
 
-        //    }
-        //}
-
-        //public class OptionEntityTypeConfiguration : IEntityTypeConfiguration<Option>
-        //{
-        //    public void Configure(EntityTypeBuilder<Option> builder)
-        //    {
-        //        builder.ToTable("Option");
-        //        builder.HasKey(x => x.Id);
-
-        //        builder.Property(x => x.Id).IsRequired();
-        //        builder.Property(x => x.Text).IsRequired().IsUnicode(true).HasMaxLength(100);
-        //        builder.HasOne(x => x.Question).WithMany(x => x.Options);
-
-        //    }
-        //}
+            }
+        }
 
     }
 }

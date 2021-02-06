@@ -12,13 +12,18 @@ namespace Compass.Repository.Core
     public class SurveyRepository : Repository<Survey>
     {
         public SurveyRepository(CompassContext context) : base(context) { }
+        public override IEnumerable<Survey> GetAll(params Expression<Func<Survey, object>>[] navigationProperties)
+        {
+            _dbQuery = _dbQuery.Include(i => i.Questions).ThenInclude(it => it.Options);
+
+            return _dbQuery
+               .AsNoTracking()
+               .ToList<Survey>();
+        }
 
         public override Survey GetSingle(Expression<Func<Survey, bool>> where, params Expression<Func<Survey, object>>[] navigationProperties)
         {
-            var survey = _context.Surveys
-            .Include(i => i.Questions)
-                .ThenInclude(it => it.Options).SingleOrDefault(where);
-
+            var survey = _dbQuery.Include(i => i.Questions).ThenInclude(it => it.Options).SingleOrDefault(where);
             return survey;
         }
     }
