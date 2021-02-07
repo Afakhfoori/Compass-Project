@@ -38,7 +38,7 @@ namespace Compass.Api.Core
                 options.AddPolicy(MyAllowSpecificOrigins,
                 builder =>
                 {
-                builder.WithOrigins("http://localhost:3000");
+                    builder.AllowAnyOrigin();
                 });
             });
             services.AddScoped<ISurveyService, SurveyService>();

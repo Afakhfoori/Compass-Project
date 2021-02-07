@@ -8,8 +8,9 @@ using Compass.Domain;
 using Compass.Repository.Core;
 using Microsoft.EntityFrameworkCore;
 using System.Text.Json;
-using Newtonsoft.Json;
 using Compass.Service.Core;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 
 namespace Compass.Api.Core.Controllers
 {
@@ -33,7 +34,7 @@ namespace Compass.Api.Core.Controllers
             try
             {
                 var surveyList = _service.GetAllItems().ToList();
-                return Ok(surveyList);
+                return Ok(ConvertToProperJSON(surveyList));
             }
             catch (Exception ex)
             {
@@ -50,14 +51,7 @@ namespace Compass.Api.Core.Controllers
                 var result = _service.GetItemById(id);
                 if (result != null)
                 {
-
-                    var settings = new Newtonsoft.Json.JsonSerializerSettings
-                    {
-                        ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
-                        Formatting = Formatting.Indented
-                    };
-
-                    return Ok(JsonConvert.SerializeObject(result, settings));
+                    return Ok(ConvertToProperJSON(result));
                 }
                 else
                 {
@@ -68,6 +62,24 @@ namespace Compass.Api.Core.Controllers
             {
                 return StatusCode(500);
             }
+
+        }
+        private string ConvertToProperJSON(Object value)
+        {
+            DefaultContractResolver contractResolver = new DefaultContractResolver
+            {
+                NamingStrategy = new CamelCaseNamingStrategy()
+            };
+
+            var settings = new Newtonsoft.Json.JsonSerializerSettings
+            {
+                ContractResolver = contractResolver,
+                ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
+                Formatting = Formatting.Indented,
+                
+            };
+
+            return (JsonConvert.SerializeObject(value, settings));
 
         }
     }
