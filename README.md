@@ -24,8 +24,8 @@ For testing puposes I propose Dependency injection, So I have provided one examp
 I choose React to implement UI.
 In my solution I have 3 components:
 1) Question --- Which have cthe Question details included options.
-2) Survey --- Which have the list of questions based on selected survey (with fetch the Question details from API based on passed surveyId as URL parametr.
-1) Srveys --- Which ishe main page and connecting to the API to get the List of Surveys and just included the links to main survey.
+2) Survey --- Which have the list of questions based on selected survey 
+1) Srveys --- Which is the main page and  showes the surveys which has been already fetched from Api in the higher component (App component)
 
 
 ## More details documentation has been added in to the solutions directories
