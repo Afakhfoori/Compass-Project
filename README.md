@@ -30,7 +30,7 @@ In my solution I have 3 components:
 1) Srveys --- Which ishe main page and connecting to the API to get the List of Surveys and just included the links to main survey.
 
 
-## More details documentation has been added in to the solutins directores
+## More details documentation has been added in to the solutins directories
 
 
 
